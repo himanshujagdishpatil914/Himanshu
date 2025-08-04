@@ -31,7 +31,7 @@
 ## 📫 How to Reach Me
 - [GitHub](https://github.com/himanshujagdishpatil914)
 - Email: himanshujagdishpatil914@gmail.com
-- LinkedIn: [Your LinkedIn Profile](#)
+- LinkedIn: [www.linkedin.com/in/himanshu-patil-2b6a9b256](#)
 
 ---
 
