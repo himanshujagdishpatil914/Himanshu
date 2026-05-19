@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SignAI — Frontend Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: 'Inter', sans-serif; background: #0f172a; color: #f1f5f9; }
+    
+    :root {
+      --bg-base: #0f172a; --bg-surface: #1e293b; --bg-elevated: #273548;
+      --border: #334155; --text-primary: #f1f5f9; --text-muted: #94a3b8;
+      --accent: #6366f1; --accent-hover: #818cf8;
+      --success: #22c55e; --warning: #f59e0b; --danger: #ef4444;
+      --radius-md: 12px; --radius-lg: 18px;
+    }
+
+    .app { max-width: 1400px; margin: 0 auto; padding: 0 16px 40px; }
+
+    /* Header */
+    .app-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 0 10px; border-bottom: 1px solid var(--border);
+    }
+    .header-logo { display: flex; align-items: center; gap: 14px; }
+    .logo-icon { font-size: 2.6rem; }
+    .logo-title { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg,#6366f1,#a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .logo-sub { font-size: .8rem; color: var(--text-muted); margin-top: 2px; }
+    .header-badge { display: flex; gap: 8px; }
+    .badge { padding: 4px 12px; border-radius: 20px; font-size: .75rem; font-weight: 600; background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-muted); }
+    .badge-ai { background: linear-gradient(135deg,#6366f1,#a78bfa); color: #fff; border: none; }
+
+    /* Status bar */
+    .status-bar {
+      display: flex; align-items: center; gap: 20px;
+      padding: 8px 14px; margin: 12px 0;
+      background: var(--bg-surface); border-radius: var(--radius-md);
+      border: 1px solid var(--border); font-size: .82rem;
+    }
+    .status-dot { font-weight: 600; color: #22c55e; }
+    .hand-indicator { color: #22c55e; font-weight: 600; }
+
+    /* Tab nav */
+    .tab-nav { display: flex; gap: 8px; margin-bottom: 20px; }
+    .tab-btn {
+      padding: 10px 22px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--bg-surface); color: var(--text-muted);
+      font-size: .9rem; font-weight: 500; cursor: pointer;
+    }
+    .tab-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+
+    /* Main grid */
+    .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+
+    /* Panel */
+    .panel {
+      background: var(--bg-surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 22px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+    .panel-title { font-size: 1rem; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .results-panel { display: flex; flex-direction: column; gap: 20px; }
+
+    /* Camera mock */
+    .webcam-container {
+      position: relative; border-radius: var(--radius-md); overflow: hidden;
+      background: #000; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center;
+    }
+    .webcam-mock {
+      width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #1a1a2e, #16213e); position: relative;
+    }
+    .hand-mock {
+      font-size: 6rem; opacity: 0.9; animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-10px); } }
+    .landmarks {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Ccircle cx='100' cy='60' r='3' fill='%2322c55e'/%3E%3Ccircle cx='95' cy='80' r='3' fill='%2322c55e'/%3E%3Ccircle cx='90' cy='100' r='3' fill='%2322c55e'/%3E%3Ccircle cx='85' cy='120' r='3' fill='%2322c55e'/%3E%3Ccircle cx='110' cy='75' r='3' fill='%2322c55e'/%3E%3Ccircle cx='115' cy='90' r='3' fill='%2322c55e'/%3E%3Ccircle cx='105' cy='95' r='3' fill='%2322c55e'/%3E%3Ccircle cx='120' cy='100' r='3' fill='%2322c55e'/%3E%3Cline x1='100' y1='60' x2='95' y2='80' stroke='%2322c55e' stroke-width='1.5'/%3E%3Cline x1='95' y1='80' x2='90' y2='100' stroke='%2322c55e' stroke-width='1.5'/%3E%3Cline x1='90' y1='100' x2='85' y2='120' stroke='%2322c55e' stroke-width='1.5'/%3E%3Cline x1='100' y1='60' x2='110' y2='75' stroke='%2322c55e' stroke-width='1.5'/%3E%3Cline x1='110' y1='75' x2='115' y2='90' stroke='%2322c55e' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat center;
+      opacity: 0.7;
+    }
+    .rec-indicator {
+      position: absolute; top: 10px; right: 10px;
+      background: var(--danger); color: #fff;
+      padding: 4px 10px; border-radius: 20px; font-size: .75rem; font-weight: 700;
+      animation: pulse 1.2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+    .camera-controls { display: flex; gap: 10px; margin-top: 12px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 18px; border-radius: 9px; border: none;
+      font-size: .88rem; font-weight: 600; cursor: pointer;
+    }
+    .btn-danger { background: #450a0a; color: var(--danger); border: 1px solid var(--danger); }
+    .btn-secondary { background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border); }
+    .cam-hint { font-size: .8rem; color: var(--text-muted); margin-top: 8px; }
+
+    /* Sign Display */
+    .sign-card {
+      background: linear-gradient(135deg, #1e1b4b, #312e81);
+      border: 1px solid #4338ca; border-radius: var(--radius-lg);
+      padding: 28px; text-align: center;
+    }
+    .sign-label {
+      display: block; font-size: 3rem; font-weight: 800;
+      background: linear-gradient(135deg,#a5b4fc,#e879f9);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 14px; letter-spacing: 2px;
+    }
+    .conf-row { display: flex; align-items: center; gap: 10px; }
+    .conf-bar-track { flex: 1; height: 8px; background: #1e293b; border-radius: 4px; overflow: hidden; }
+    .conf-bar-fill { height: 100%; width: 96%; background: #22c55e; border-radius: 4px; }
+    .conf-value { font-size: .85rem; font-weight: 700; min-width: 40px; }
+
+    /* Top-5 */
+    .top5 { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
+    .top5-title { font-size: .8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+    .top5-row { display: flex; align-items: center; gap: 8px; font-size: .8rem; }
+    .top5-rank { color: var(--text-muted); width: 22px; }
+    .top5-sign { width: 80px; font-weight: 600; }
+    .top5-bar-track { flex: 1; height: 6px; background: var(--bg-elevated); border-radius: 3px; overflow: hidden; }
+    .top5-bar-fill { height: 100%; background: var(--accent); border-radius: 3px; }
+    .top5-prob { width: 36px; text-align: right; color: var(--text-muted); }
+
+    /* Sentence Builder */
+    .sentence-builder { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; }
+    .sb-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .mode-toggle { display: flex; gap: 6px; }
+    .mode-btn {
+      padding: 5px 14px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg-elevated); color: var(--text-muted); font-size: .8rem; font-weight: 600; cursor: pointer;
+    }
+    .mode-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    .word-chips {
+      min-height: 64px; display: flex; flex-wrap: wrap; gap: 8px;
+      align-content: flex-start; padding: 12px;
+      background: var(--bg-elevated); border-radius: var(--radius-md);
+      border: 1px dashed var(--border); margin-bottom: 14px;
+    }
+    .chip {
+      display: inline-flex; align-items: center;
+      padding: 6px 14px; border-radius: 20px;
+      background: var(--accent); color: #fff;
+      font-size: .88rem; font-weight: 600;
+    }
+    .chip:nth-child(2) { background: #7c3aed; }
+    .chip:nth-child(3) { background: #2563eb; }
+    .chip:nth-child(4) { background: #0891b2; }
+    .chip:nth-child(5) { background: #059669; }
+
+    .sentence-text {
+      padding: 12px 16px; background: var(--bg-elevated); border-radius: var(--radius-md);
+      border-left: 3px solid var(--accent); font-size: 1.05rem; font-weight: 500;
+      margin-bottom: 14px;
+    }
+
+    .sb-controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-tts { flex: 1; justify-content: center; }
+
+    .quick-add { margin-top: 8px; }
+    .quick-title { font-size: .78rem; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
+    .quick-btns { display: flex; flex-wrap: wrap; gap: 6px; }
+    .quick-btn {
+      padding: 5px 12px; border-radius: 20px;
+      background: var(--bg-elevated); border: 1px solid var(--border);
+      color: var(--text-muted); font-size: .78rem; cursor: pointer;
+    }
+
+    /* Watermark */
+    .preview-badge {
+      position: fixed; bottom: 16px; right: 16px;
+      background: rgba(99, 102, 241, 0.15); border: 1px solid var(--accent);
+      padding: 8px 16px; border-radius: 10px;
+      font-size: .75rem; color: var(--accent); font-weight: 600;
+      backdrop-filter: blur(8px);
+    }
+
+    @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="app-header">
+    <div class="header-logo">
+      <span class="logo-icon">🤟</span>
+      <div>
+        <h1 class="logo-title">SignAI</h1>
+        <p class="logo-sub">Real-time Sign Language Translator</p>
+      </div>
+    </div>
+    <div class="header-badge">
+      <span class="badge">40 Signs</span>
+      <span class="badge badge-ai">AI Powered</span>
+    </div>
+  </header>
+
+  <!-- ═══ STATUS BAR ═══ -->
+  <div class="status-bar">
+    <span class="status-dot">● Connected</span>
+    <span class="hand-indicator">✋ Hand Detected</span>
+  </div>
+
+  <!-- ═══ TAB NAV ═══ -->
+  <nav class="tab-nav">
+    <button class="tab-btn active">🤟 Translator</button>
+    <button class="tab-btn">📖 Sign List</button>
+  </nav>
+
+  <!-- ═══ MAIN GRID ═══ -->
+  <div class="main-grid">
+
+    <!-- LEFT — Camera Panel -->
+    <section class="panel camera-panel">
+      <h2 class="panel-title">📷 Live Feed</h2>
+      <div class="webcam-container">
+        <div class="webcam-mock">
+          <span class="hand-mock">🤟</span>
+          <div class="landmarks"></div>
+          <div class="rec-indicator">⬤ LIVE</div>
+        </div>
+      </div>
+      <div class="camera-controls">
+        <button class="btn btn-danger">⏹ Stop</button>
+        <button class="btn btn-secondary">↔ Mirror</button>
+      </div>
+      <p class="cam-hint">🟢 Detecting — show your hand sign clearly in the frame</p>
+    </section>
+
+    <!-- RIGHT — Results Panel -->
+    <section class="panel results-panel">
+      
+      <!-- Sign Display -->
+      <div>
+        <h2 class="panel-title">🔤 Detected Sign</h2>
+        <div class="sign-card">
+          <span class="sign-label">hello</span>
+          <div class="conf-row">
+            <div class="conf-bar-track"><div class="conf-bar-fill"></div></div>
+            <span class="conf-value">96.2%</span>
+          </div>
+        </div>
+        <div class="top5">
+          <h3 class="top5-title">Top Predictions</h3>
+          <div class="top5-row">
+            <span class="top5-rank">#1</span>
+            <span class="top5-sign">hello</span>
+            <div class="top5-bar-track"><div class="top5-bar-fill" style="width:96%"></div></div>
+            <span class="top5-prob">96.2%</span>
+          </div>
+          <div class="top5-row">
+            <span class="top5-rank">#2</span>
+            <span class="top5-sign">good</span>
+            <div class="top5-bar-track"><div class="top5-bar-fill" style="width:2%;opacity:0.8"></div></div>
+            <span class="top5-prob">2.1%</span>
+          </div>
+          <div class="top5-row">
+            <span class="top5-rank">#3</span>
+            <span class="top5-sign">yes</span>
+            <div class="top5-bar-track"><div class="top5-bar-fill" style="width:1%;opacity:0.6"></div></div>
+            <span class="top5-prob">0.9%</span>
+          </div>
+          <div class="top5-row">
+            <span class="top5-rank">#4</span>
+            <span class="top5-sign">please</span>
+            <div class="top5-bar-track"><div class="top5-bar-fill" style="width:0.5%;opacity:0.5"></div></div>
+            <span class="top5-prob">0.5%</span>
+          </div>
+          <div class="top5-row">
+            <span class="top5-rank">#5</span>
+            <span class="top5-sign">fine</span>
+            <div class="top5-bar-track"><div class="top5-bar-fill" style="width:0.3%;opacity:0.4"></div></div>
+            <span class="top5-prob">0.3%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sentence Builder -->
+      <div class="sentence-builder">
+        <div class="sb-header">
+          <h2 class="panel-title" style="margin-bottom:0">💬 Sentence Builder</h2>
+          <div class="mode-toggle">
+            <button class="mode-btn">🔤 Words</button>
+            <button class="mode-btn active">📝 Sentence</button>
+          </div>
+        </div>
+        <div class="word-chips">
+          <span class="chip">hello</span>
+          <span class="chip">howareyou</span>
+          <span class="chip">iloveyou</span>
+          <span class="chip">thankyou</span>
+          <span class="chip">good</span>
+        </div>
+        <div class="sentence-text">
+          <span>hello howareyou iloveyou thankyou good</span>
+        </div>
+        <div class="sb-controls">
+          <button class="btn btn-primary btn-tts">🔊 Speak</button>
+          <button class="btn btn-secondary">📋 Copy</button>
+          <button class="btn btn-secondary">⌫ Undo</button>
+          <button class="btn btn-danger">🗑 Clear</button>
+        </div>
+        <div class="quick-add">
+          <p class="quick-title">Quick Add:</p>
+          <div class="quick-btns">
+            <button class="quick-btn">hello</button>
+            <button class="quick-btn">yes</button>
+            <button class="quick-btn">no</button>
+            <button class="quick-btn">please</button>
+            <button class="quick-btn">thankyou</button>
+            <button class="quick-btn">sorry</button>
+            <button class="quick-btn">help</button>
+            <button class="quick-btn">good</button>
+            <button class="quick-btn">iloveyou</button>
+            <button class="quick-btn">stop</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="preview-badge">✨ SignAI Frontend Preview — Final Year Project</div>
+
+</body>
+</html>
